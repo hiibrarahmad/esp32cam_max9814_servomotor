@@ -19,7 +19,6 @@ const uint16_t websockets_server_port = 8888;
 using namespace websockets;
 WebsocketsClient client;
 
-
 Servo servo;
 bool rotateServo = false;       // Flag to indicate servo rotation
 unsigned long rotationStartTime; // Time when rotation started
@@ -104,6 +103,9 @@ void setup() {
 
   // Websockets client event callback...
   client.onEvent(onEventsCallback);
+
+  // Task creation for sending audio from ADC mic
+  xTaskCreatePinnedToCore(adc_task, "adc_task", 4096, NULL, 1, &adcHandler, 1);
 }
 
 void loop() {
@@ -207,7 +209,6 @@ static void adc_task(void* arg) {
 void onEventsCallback(WebsocketsEvent event, String data) {
   if (event == WebsocketsEvent::ConnectionOpened) {
     Serial.println("Connnection Opened");
-    xTaskCreate(adc_task, "adc_task", 4096, NULL, 1, &adcHandler);
   } else if (event == WebsocketsEvent::ConnectionClosed) {
     Serial.println("Connnection Closed");
     ESP.restart();
