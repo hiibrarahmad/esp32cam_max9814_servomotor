@@ -1,4 +1,4 @@
-# 1 "C:\\Users\\FA19-B~1.CUI\\AppData\\Local\\Temp\\tmpws03596i"
+# 1 "C:\\Users\\FA19-B~1.CUI\\AppData\\Local\\Temp\\tmp5qeja82b"
 #include <Arduino.h>
 # 1 "E:/fyp/esp32cam_max9814_servomotor/src/main.ino"
 #include "esp_camera.h"
@@ -8,6 +8,9 @@
 #include <Servo.h>
 #include "driver/adc.h"
 
+#define CAMERA_MODEL_AI_THINKER 
+
+#include "camera_pins.h"
 ezButton button(14);
 const int servoPin = 15;
 
@@ -16,7 +19,9 @@ const char* ssid = "ibrar";
 const char* password = "ibrarahmad";
 const char* websockets_server_host = "192.168.4.1";
 const uint16_t websockets_server_port = 8888;
+using namespace websockets;
 WebsocketsClient client;
+
 
 Servo servo;
 bool rotateServo = false;
@@ -37,7 +42,8 @@ static void adc_task(void* arg);
 void onEventsCallback(WebsocketsEvent event, String data);
 void setup();
 void loop();
-#line 36 "E:/fyp/esp32cam_max9814_servomotor/src/main.ino"
+void captureAndSendImage();
+#line 41 "E:/fyp/esp32cam_max9814_servomotor/src/main.ino"
 void setup() {
   Serial.begin(115200);
   button.setDebounceTime(50);
@@ -138,6 +144,21 @@ void loop() {
   client.poll();
 
   delay(100);
+}
+
+void captureAndSendImage() {
+  camera_fb_t *fb = NULL;
+  fb = esp_camera_fb_get();
+  if (!fb) {
+    Serial.println("Camera capture failed");
+    return;
+  }
+
+
+  client.sendBinary((const char*)fb->buf, fb->len);
+
+
+  esp_camera_fb_return(fb);
 }
 
 void start_to_connect() {

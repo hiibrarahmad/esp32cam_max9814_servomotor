@@ -5,6 +5,9 @@
 #include <Servo.h>
 #include "driver/adc.h"
 
+#define CAMERA_MODEL_AI_THINKER
+
+#include "camera_pins.h"
 ezButton button(14);
 const int servoPin = 15; // Pin for the servo
 
@@ -13,7 +16,9 @@ const char* ssid = "ibrar";
 const char* password = "ibrarahmad";
 const char* websockets_server_host = "192.168.4.1";
 const uint16_t websockets_server_port = 8888;
+using namespace websockets;
 WebsocketsClient client;
+
 
 Servo servo;
 bool rotateServo = false;       // Flag to indicate servo rotation
@@ -133,6 +138,21 @@ void loop() {
   client.poll();
 
   delay(100);
+}
+
+void captureAndSendImage() {
+  camera_fb_t *fb = NULL;
+  fb = esp_camera_fb_get();
+  if (!fb) {
+    Serial.println("Camera capture failed");
+    return;
+  }
+
+  // Send the image over the websocket
+  client.sendBinary((const char*)fb->buf, fb->len);
+  
+
+  esp_camera_fb_return(fb);
 }
 
 void start_to_connect() {
