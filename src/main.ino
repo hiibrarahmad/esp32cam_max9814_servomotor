@@ -1,3 +1,16 @@
+/*
+                      5v            3v    
+                      gnd           16      servo signal
+audio button          12            0
+bell button           13            gnd
+sda lcd               15            vcc
+scl lcd               14            udr
+                      2             uot
+                      4             gnd
+
+*/
+
+
 #include "esp_camera.h"
 #include <WiFi.h>
 #include <ArduinoWebsockets.h>
@@ -8,8 +21,11 @@
 #define CAMERA_MODEL_AI_THINKER
 
 #include "camera_pins.h"
-ezButton button(14);
-const int servoPin = 15; // Pin for the servo
+ezButton button(13);
+const int servoPin = 16; // Pin for the servo
+
+//sda 15
+//scl 14 lcd 
 
 // WiFi and Websockets configuration
 const char* ssid = "ibrar";
