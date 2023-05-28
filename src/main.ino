@@ -197,6 +197,8 @@ static void adc_task(void* arg) {
     }
     adc_data_scale(scaled_buff, adc_read_buff, adc_read_len);
     client.sendBinary((const char*)scaled_buff, adc_read_len * 2);
+    Serial.print(scaled_buff);
+    serial.print(adc_read_len*2);
     ets_printf("Never Used Stack Size: %u\n", uxTaskGetStackHighWaterMark(NULL));
   }
 
